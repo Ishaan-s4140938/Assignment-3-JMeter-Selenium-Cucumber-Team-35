@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -14,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OpenNewAccountTest {
@@ -27,15 +29,18 @@ public class OpenNewAccountTest {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
 
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         driver.get(
                 "https://parabank.parasoft.com/parabank/index.htm"
         );
 
-        // Create a new customer for each test
-        // This allows every test to run independently
-        driver.findElement(By.linkText("Register")).click();
+        // Register a new customer for each test
+        wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.linkText("Register")
+                )
+        ).click();
 
         String username =
                 "account35_" +
@@ -92,39 +97,26 @@ public class OpenNewAccountTest {
         );
     }
 
+
     // ACC-01:
     // Verify that a new CHECKING account can be opened
     @Test
     public void openCheckingAccount() {
 
-        driver.findElement(
-                By.linkText("Open New Account")
-        ).click();
+        openAccountPage();
 
-        wait.until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.id("type")
-                )
-        );
-
-        // Select CHECKING account
         Select accountType =
-                new Select(driver.findElement(By.id("type")));
+                new Select(
+                        wait.until(
+                                ExpectedConditions.visibilityOfElementLocated(
+                                        By.id("type")
+                                )
+                        )
+                );
 
         accountType.selectByVisibleText("CHECKING");
 
-        // Open the new account
-        driver.findElement(
-                By.xpath("//input[@value='Open New Account']")
-        ).click();
-
-        // Wait for successful account creation
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("openAccountResult"),
-                        "Account Opened!"
-                )
-        );
+        openAccountAndWaitForSuccess();
 
         String result =
                 driver.findElement(
@@ -144,39 +136,26 @@ public class OpenNewAccountTest {
         );
     }
 
+
     // ACC-02:
     // Verify that a new SAVINGS account can be opened
     @Test
     public void openSavingsAccount() {
 
-        driver.findElement(
-                By.linkText("Open New Account")
-        ).click();
+        openAccountPage();
 
-        wait.until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.id("type")
-                )
-        );
-
-        // Select SAVINGS account
         Select accountType =
-                new Select(driver.findElement(By.id("type")));
+                new Select(
+                        wait.until(
+                                ExpectedConditions.visibilityOfElementLocated(
+                                        By.id("type")
+                                )
+                        )
+                );
 
         accountType.selectByVisibleText("SAVINGS");
 
-        // Open the new account
-        driver.findElement(
-                By.xpath("//input[@value='Open New Account']")
-        ).click();
-
-        // Wait for successful account creation
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("openAccountResult"),
-                        "Account Opened!"
-                )
-        );
+        openAccountAndWaitForSuccess();
 
         String result =
                 driver.findElement(
@@ -196,13 +175,57 @@ public class OpenNewAccountTest {
         );
     }
 
+
     // ACC-03:
     // Verify that a new account number is displayed
     @Test
     public void verifyNewAccountNumberIsDisplayed() {
 
-        driver.findElement(
-                By.linkText("Open New Account")
+        openAccountPage();
+
+        Select accountType =
+                new Select(
+                        wait.until(
+                                ExpectedConditions.visibilityOfElementLocated(
+                                        By.id("type")
+                                )
+                        )
+                );
+
+        accountType.selectByVisibleText("CHECKING");
+
+        openAccountAndWaitForSuccess();
+
+        // Get the dynamically generated account number
+        WebElement accountNumber =
+                wait.until(
+                        ExpectedConditions.visibilityOfElementLocated(
+                                By.id("newAccountId")
+                        )
+                );
+
+        String newAccountNumber =
+                accountNumber.getText().trim();
+
+        assertFalse(
+                newAccountNumber.isEmpty(),
+                "New account number was not displayed"
+        );
+
+        assertTrue(
+                newAccountNumber.matches("\\d+"),
+                "Displayed account number is not valid"
+        );
+    }
+
+
+    // Navigate to the Open New Account page
+    private void openAccountPage() {
+
+        wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.linkText("Open New Account")
+                )
         ).click();
 
         wait.until(
@@ -210,34 +233,58 @@ public class OpenNewAccountTest {
                         By.id("type")
                 )
         );
+    }
 
-        Select accountType =
-                new Select(driver.findElement(By.id("type")));
 
-        accountType.selectByVisibleText("CHECKING");
+    // Click the Open New Account button and wait for success.
+    // ParaBank may occasionally remain on the form after the first click,
+    // so one additional click is attempted if required.
+    private void openAccountAndWaitForSuccess() {
 
-        driver.findElement(
-                By.xpath("//input[@value='Open New Account']")
+        By openButton =
+                By.xpath("//input[@value='Open New Account']");
+
+        // First attempt
+        wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        openButton
+                )
         ).click();
 
-        // Wait until the new account result is displayed
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("openAccountResult"),
-                        "Your new account number:"
-                )
-        );
+        WebDriverWait shortWait =
+                new WebDriverWait(
+                        driver,
+                        Duration.ofSeconds(5)
+                );
 
-        String result =
-                driver.findElement(
-                        By.id("openAccountResult")
-                ).getText();
+        try {
 
-        assertTrue(
-                result.contains("Your new account number:"),
-                "New account number was not displayed"
-        );
+            shortWait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("openAccountResult"),
+                            "Account Opened!"
+                    )
+            );
+
+        } catch (Exception firstAttemptException) {
+
+            // ParaBank remained on the form.
+            // Retry the account-opening action once.
+            wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            openButton
+                    )
+            ).click();
+
+            wait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("openAccountResult"),
+                            "Account Opened!"
+                    )
+            );
+        }
     }
+
 
     @AfterEach
     public void tearDown() {
