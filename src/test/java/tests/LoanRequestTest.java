@@ -1,5 +1,9 @@
 package tests;
 
+import com.inflectra.spiratest.addons.junitextension.SpiraExtension;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestConfiguration;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,228 +20,239 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LoanRequestTest {
+@ExtendWith(SpiraExtension.class)
+@SpiraTestConfiguration(
+        url = "https://rmit.spiraservice.net",
+        login = "S4151762",
+        password = "",
+        projectId = 1151
+)
 
-    private WebDriver driver;
-    private WebDriverWait wait;
+    public class LoanRequestTest {
 
-    @BeforeEach
-    public void setUp() {
+        private WebDriver driver;
+        private WebDriverWait wait;
 
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
+        @BeforeEach
+        public void setUp() {
 
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            driver = new ChromeDriver();
+            driver.manage().window().maximize();
 
-        driver.get(
-                "https://parabank.parasoft.com/parabank/index.htm"
-        );
+            wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // Create a fresh customer for every test.
-        createTestCustomer();
+            driver.get(
+                    "https://parabank.parasoft.com/parabank/index.htm"
+            );
 
-        // Navigate to Request Loan.
-        wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        By.linkText("Request Loan")
-                )
-        ).click();
+            // Create a fresh customer for every test.
+            createTestCustomer();
 
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rightPanel"),
-                        "Apply for a Loan"
-                )
-        );
-    }
+            // Navigate to Request Loan.
+            wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            By.linkText("Request Loan")
+                    )
+            ).click();
 
-
-    // LOAN-01:
-    // Verify that a valid loan request is processed.
-    @Test
-    public void successfulLoanRequest() {
-
-        driver.findElement(By.id("amount"))
-                .sendKeys("100");
-
-        driver.findElement(By.id("downPayment"))
-                .sendKeys("10");
-
-        driver.findElement(
-                By.xpath("//input[@value='Apply Now']")
-        ).click();
-
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rightPanel"),
-                        "Loan Request Processed"
-                )
-        );
-
-        String result =
-                driver.findElement(By.id("rightPanel")).getText();
-
-        assertTrue(
-                result.contains("Loan Request Processed"),
-                "Loan request was not processed"
-        );
-
-        assertTrue(
-                result.contains("Approved"),
-                "Expected the valid loan request to be approved"
-        );
-    }
+            wait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("rightPanel"),
+                            "Apply for a Loan"
+                    )
+            );
+        }
 
 
-    // LOAN-02:
-    // Verify that a loan is denied when the down payment
-    // exceeds the customer's available funds.
-    @Test
-    public void loanDeniedForInsufficientFunds() {
+        // LOAN-01:
+        // Verify that a valid loan request is processed.
+        @SpiraTestCase(testCaseId = 54319)
+        @Test
+        public void successfulLoanRequest() {
 
-        driver.findElement(By.id("amount"))
-                .sendKeys("10000");
+            driver.findElement(By.id("amount"))
+                    .sendKeys("100");
 
-        driver.findElement(By.id("downPayment"))
-                .sendKeys("5000");
+            driver.findElement(By.id("downPayment"))
+                    .sendKeys("10");
 
-        driver.findElement(
-                By.xpath("//input[@value='Apply Now']")
-        ).click();
+            driver.findElement(
+                    By.xpath("//input[@value='Apply Now']")
+            ).click();
 
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rightPanel"),
-                        "Loan Request Processed"
-                )
-        );
+            wait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("rightPanel"),
+                            "Loan Request Processed"
+                    )
+            );
 
-        String result =
-                driver.findElement(By.id("rightPanel")).getText();
+            String result =
+                    driver.findElement(By.id("rightPanel")).getText();
 
-        assertTrue(
-                result.contains("Denied"),
-                "Expected loan request to be denied"
-        );
+            assertTrue(
+                    result.contains("Loan Request Processed"),
+                    "Loan request was not processed"
+            );
 
-        assertTrue(
-                result.contains(
-                        "You do not have sufficient funds for the given down payment."
-                ),
-                "Expected insufficient funds message was not displayed"
-        );
-    }
+            assertTrue(
+                    result.contains("Approved"),
+                    "Expected the valid loan request to be approved"
+            );
+        }
 
 
-    // LOAN-03:
-    // Verify application behaviour when loan amount
-    // and down payment are left empty.
-    @Test
-    public void loanRequestWithEmptyValues() {
+        // LOAN-02:
+        // Verify that a loan is denied when the down payment
+        // exceeds the customer's available funds.
+        @SpiraTestCase(testCaseId = 54320)
+        @Test
+        public void loanDeniedForInsufficientFunds() {
 
-        // Submit without entering loan amount or down payment.
-        driver.findElement(
-                By.xpath("//input[@value='Apply Now']")
-        ).click();
+            driver.findElement(By.id("amount"))
+                    .sendKeys("10000");
 
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rightPanel"),
-                        "An internal error has occurred and has been logged."
-                )
-        );
+            driver.findElement(By.id("downPayment"))
+                    .sendKeys("5000");
 
-        String result =
-                driver.findElement(By.id("rightPanel")).getText();
+            driver.findElement(
+                    By.xpath("//input[@value='Apply Now']")
+            ).click();
 
-        assertTrue(
-                result.contains("Error!"),
-                "Error heading was not displayed"
-        );
+            wait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("rightPanel"),
+                            "Loan Request Processed"
+                    )
+            );
 
-        assertTrue(
-                result.contains(
-                        "An internal error has occurred and has been logged."
-                ),
-                "Expected error message was not displayed"
-        );
-    }
+            String result =
+                    driver.findElement(By.id("rightPanel")).getText();
 
+            assertTrue(
+                    result.contains("Denied"),
+                    "Expected loan request to be denied"
+            );
 
-    // Create a new ParaBank customer so each test is independent.
-    private void createTestCustomer() {
-
-        driver.findElement(By.linkText("Register")).click();
-
-        String username =
-                "loan35_" +
-                        UUID.randomUUID()
-                                .toString()
-                                .substring(0, 8);
-
-        String password = "LoanTest35";
-
-        driver.findElement(By.id("customer.firstName"))
-                .sendKeys("Group");
-
-        driver.findElement(By.name("customer.lastName"))
-                .sendKeys("ThirtyFive");
-
-        driver.findElement(By.id("customer.address.street"))
-                .sendKeys("35 Test Street");
-
-        driver.findElement(By.name("customer.address.city"))
-                .sendKeys("Melbourne");
-
-        driver.findElement(By.id("customer.address.state"))
-                .sendKeys("Victoria");
-
-        driver.findElement(By.name("customer.address.zipCode"))
-                .sendKeys("3000");
-
-        driver.findElement(By.id("customer.phoneNumber"))
-                .sendKeys("0400000035");
-
-        driver.findElement(By.name("customer.ssn"))
-                .sendKeys("357913579");
-
-        driver.findElement(By.id("customer.username"))
-                .sendKeys(username);
-
-        driver.findElement(By.name("customer.password"))
-                .sendKeys(password);
-
-        driver.findElement(By.id("repeatedPassword"))
-                .sendKeys(password);
-
-        driver.findElement(
-                By.xpath("//input[@value='Register']")
-        ).click();
-
-        wait.until(
-                ExpectedConditions.textToBePresentInElementLocated(
-                        By.id("rightPanel"),
-                        "Your account was created successfully"
-                )
-        );
-
-        String registrationResult =
-                driver.findElement(By.id("rightPanel")).getText();
-
-        assertTrue(
-                registrationResult.contains(
-                        "Your account was created successfully"
-                ),
-                "Test customer could not be created"
-        );
-    }
+            assertTrue(
+                    result.contains(
+                            "You do not have sufficient funds for the given down payment."
+                    ),
+                    "Expected insufficient funds message was not displayed"
+            );
+        }
 
 
-    @AfterEach
-    public void tearDown() {
+        // LOAN-03:
+        // Verify application behaviour when loan amount
+        // and down payment are left empty.
+        @SpiraTestCase(testCaseId = 54321)
+        @Test
+        public void loanRequestWithEmptyValues() {
 
-        if (driver != null) {
-            driver.quit();
+            // Submit without entering loan amount or down payment.
+            driver.findElement(
+                    By.xpath("//input[@value='Apply Now']")
+            ).click();
+
+            wait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("rightPanel"),
+                            "An internal error has occurred and has been logged."
+                    )
+            );
+
+            String result =
+                    driver.findElement(By.id("rightPanel")).getText();
+
+            assertTrue(
+                    result.contains("Error!"),
+                    "Error heading was not displayed"
+            );
+
+            assertTrue(
+                    result.contains(
+                            "An internal error has occurred and has been logged."
+                    ),
+                    "Expected error message was not displayed"
+            );
+        }
+
+
+        // Create a new ParaBank customer so each test is independent.
+        private void createTestCustomer() {
+
+            driver.findElement(By.linkText("Register")).click();
+
+            String username =
+                    "loan35_" +
+                            UUID.randomUUID()
+                                    .toString()
+                                    .substring(0, 8);
+
+            String password = "LoanTest35";
+
+            driver.findElement(By.id("customer.firstName"))
+                    .sendKeys("Group");
+
+            driver.findElement(By.name("customer.lastName"))
+                    .sendKeys("ThirtyFive");
+
+            driver.findElement(By.id("customer.address.street"))
+                    .sendKeys("35 Test Street");
+
+            driver.findElement(By.name("customer.address.city"))
+                    .sendKeys("Melbourne");
+
+            driver.findElement(By.id("customer.address.state"))
+                    .sendKeys("Victoria");
+
+            driver.findElement(By.name("customer.address.zipCode"))
+                    .sendKeys("3000");
+
+            driver.findElement(By.id("customer.phoneNumber"))
+                    .sendKeys("0400000035");
+
+            driver.findElement(By.name("customer.ssn"))
+                    .sendKeys("357913579");
+
+            driver.findElement(By.id("customer.username"))
+                    .sendKeys(username);
+
+            driver.findElement(By.name("customer.password"))
+                    .sendKeys(password);
+
+            driver.findElement(By.id("repeatedPassword"))
+                    .sendKeys(password);
+
+            driver.findElement(
+                    By.xpath("//input[@value='Register']")
+            ).click();
+
+            wait.until(
+                    ExpectedConditions.textToBePresentInElementLocated(
+                            By.id("rightPanel"),
+                            "Your account was created successfully"
+                    )
+            );
+
+            String registrationResult =
+                    driver.findElement(By.id("rightPanel")).getText();
+
+            assertTrue(
+                    registrationResult.contains(
+                            "Your account was created successfully"
+                    ),
+                    "Test customer could not be created"
+            );
+        }
+
+
+        @AfterEach
+        public void tearDown() {
+
+            if (driver != null) {
+                driver.quit();
+            }
         }
     }
-}

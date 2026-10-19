@@ -1,5 +1,6 @@
 package tests;
-
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpiraTestConfiguration(
+        url = "https://rmit.spiraservice.net",
+        login = "S4151762",
+        password = "",
+        projectId = 1151
+)
 public class BillPayTest {
 
     private WebDriver driver;
@@ -56,6 +63,7 @@ public class BillPayTest {
 
     // BILLPAY-01:
     // Verify that a bill payment can be made using valid details.
+    @SpiraTestCase(testCaseId = 54309)
     @Test
     public void successfulBillPayment() {
 
@@ -106,6 +114,7 @@ public class BillPayTest {
 
     // BILLPAY-02:
     // Verify validation when account numbers are not provided.
+    @SpiraTestCase(testCaseId = 54310)
     @Test
     public void billPaymentWithMissingAccountNumbers() {
 
@@ -151,6 +160,7 @@ public class BillPayTest {
 
     // BILLPAY-03:
     // Verify validation when Account # and Verify Account # do not match.
+    @SpiraTestCase(testCaseId = 54312)
     @Test
     public void billPaymentWithMismatchedAccountNumbers() {
 

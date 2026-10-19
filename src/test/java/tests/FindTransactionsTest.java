@@ -1,5 +1,9 @@
 package tests;
 
+import com.inflectra.spiratest.addons.junitextension.SpiraExtension;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestConfiguration;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(SpiraExtension.class)
+@SpiraTestConfiguration(
+        url = "https://rmit.spiraservice.net",
+        login = "S4151762",
+        password = "",
+        projectId = 1151
+)
 
 public class FindTransactionsTest {
 
@@ -91,6 +103,7 @@ public class FindTransactionsTest {
 
     // FIND-01
     // Verify transaction search by amount
+    @SpiraTestCase(testCaseId = 54314)
     @Test
     public void findTransactionByAmount() {
 
@@ -132,6 +145,7 @@ public class FindTransactionsTest {
 
     // FIND-02
     // Verify transaction search by date
+    @SpiraTestCase(testCaseId = 54315)
     @Test
     public void findTransactionByDate() {
 
@@ -178,6 +192,7 @@ public class FindTransactionsTest {
 
     // FIND-03
     // Verify transaction search using a date range
+    @SpiraTestCase(testCaseId = 54316)
     @Test
     public void findTransactionByDateRange() {
 
@@ -234,6 +249,7 @@ public class FindTransactionsTest {
 
     // FIND-04:
 // Verify validation when an invalid transaction ID is entered
+    @SpiraTestCase(testCaseId = 54318)
     @Test
     public void findTransactionWithInvalidId() {
 

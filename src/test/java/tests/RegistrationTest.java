@@ -6,12 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestConfiguration;
 import java.util.UUID;
-
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpiraTestConfiguration(
+        url = "https://rmit.spiraservice.net",
+        login = "S4151762",
+        password = "",
+        projectId = 1151
+)
 public class RegistrationTest {
 
     private WebDriver driver;
@@ -24,6 +31,7 @@ public class RegistrationTest {
     }
 
     // REG-01: Verify successful registration with valid customer details
+    @SpiraTestCase(testCaseId = 54238)
     @Test
     public void successfulUserRegistration() {
 
@@ -96,6 +104,7 @@ public class RegistrationTest {
     }
 
     // REG-02: Verify validation when required fields are empty
+    @SpiraTestCase(testCaseId = 54263)
     @Test
     public void registrationWithEmptyRequiredFields() {
 
@@ -161,11 +170,10 @@ public class RegistrationTest {
                 "Password confirmation validation message was not displayed"
         );
     }
-
     // REG-03: Verify registration fails when passwords do not match
+    @SpiraTestCase(testCaseId =54266)
     @Test
     public void registrationWithMismatchedPasswords() {
-
         driver.findElement(By.linkText("Register")).click();
 
         String username = "group35_mismatch_" +

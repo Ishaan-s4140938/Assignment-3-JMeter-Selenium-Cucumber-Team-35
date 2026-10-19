@@ -33,6 +33,39 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JAXB API for SpiraPlan Integration -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JAXB Runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.8</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JAX-WS SOAP Runtime for SpiraPlan -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>2.3.7</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- SpiraPlan JUnit 5 Extension -->
+        <dependency>
+            <groupId>com.inflectra</groupId>
+            <artifactId>spira-junit5-extension</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/JUnit 5 Extension.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
 </project>

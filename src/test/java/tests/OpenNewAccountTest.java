@@ -1,5 +1,7 @@
 package tests;
 
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpiraTestConfiguration(
+        url = "https://rmit.spiraservice.net",
+        login = "S4151762",
+        password = "",
+        projectId = 1151
+)
 public class OpenNewAccountTest {
 
     private WebDriver driver;
@@ -100,6 +108,7 @@ public class OpenNewAccountTest {
 
     // ACC-01:
     // Verify that a new CHECKING account can be opened
+    @SpiraTestCase(testCaseId = 54304)
     @Test
     public void openCheckingAccount() {
 
@@ -139,6 +148,7 @@ public class OpenNewAccountTest {
 
     // ACC-02:
     // Verify that a new SAVINGS account can be opened
+    @SpiraTestCase(testCaseId = 54305)
     @Test
     public void openSavingsAccount() {
 
@@ -178,6 +188,7 @@ public class OpenNewAccountTest {
 
     // ACC-03:
     // Verify that a new account number is displayed
+    @SpiraTestCase(testCaseId = 54306)
     @Test
     public void verifyNewAccountNumberIsDisplayed() {
 
