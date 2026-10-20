@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Cucumber" time="159.059" tests="11" skipped="0" failures="0" errors="0">
+<testcase classname="Pay a bill" name="Pay a bill using matching payee account details" time="13.928">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I pay "25.50" to "Sydney Utilities" with payee account "12345" confirmed as "12345".passed
+Then the payment confirmation identifies the payee, amount and source account.passed
+And my source account is debited by "25.50".................................passed
+]]></system-out>
+</testcase>
+<testcase classname="Pay a bill" name="Reject mismatched payee account numbers" time="12.691">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I pay "25.50" to "Sydney Utilities" with payee account "12345" confirmed as "54321".passed
+Then payment is blocked with "The account numbers do not match."............passed
+And my source account balance remains unchanged.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Pay a bill" name="Reject a missing or invalid payment amount - #1.1" time="13.179">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I pay "" to "Sydney Utilities" with payee account "12345" confirmed as "12345".passed
+Then payment is blocked with "The amount cannot be empty."..................passed
+And my source account balance remains unchanged.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Pay a bill" name="Reject a missing or invalid payment amount - #1.2" time="12.641">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I pay "abc" to "Sydney Utilities" with payee account "12345" confirmed as "12345".passed
+Then payment is blocked with "Please enter a valid amount.".................passed
+And my source account balance remains unchanged.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Pay a bill" name="Require a payee name" time="11.511">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I pay "25.50" to "" with payee account "12345" confirmed as "12345"....passed
+Then payment is blocked with "Payee name is required."......................passed
+And my source account balance remains unchanged.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Request a loan" name="Approve an affordable loan with a sufficient down payment" time="13.48">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I request a loan of "100.00" with a down payment of "20.00"............passed
+Then the loan decision is "Approved"........................................passed
+And a new loan account contains "100.00"....................................passed
+And my source account is debited by "20.00".................................passed
+]]></system-out>
+</testcase>
+<testcase classname="Request a loan" name="Deny a loan when the down payment exceeds available funds" time="12.253">
+<system-out><![CDATA[
+Given I am a newly registered customer with a funded account................passed
+When I request a loan of "1000000.00" with a down payment greater than my available funds.passed
+Then the loan decision is "Denied"..........................................passed
+And a reason is provided without creating a loan account....................passed
+And my source account balance remains unchanged.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Transfer funds between my accounts" name="Transfer a valid amount between distinct accounts - #1.1" time="18.354">
+<system-out><![CDATA[
+Given I am a newly registered customer with two funded accounts.............passed
+When I transfer "10.00" from my first account to my second account..........passed
+Then the transfer confirmation identifies the amount and both accounts......passed
+And my first account is debited and my second account is credited by "10.00".passed
+]]></system-out>
+</testcase>
+<testcase classname="Transfer funds between my accounts" name="Transfer a valid amount between distinct accounts - #1.2" time="18.062">
+<system-out><![CDATA[
+Given I am a newly registered customer with two funded accounts.............passed
+When I transfer "0.01" from my first account to my second account...........passed
+Then the transfer confirmation identifies the amount and both accounts......passed
+And my first account is debited and my second account is credited by "0.01".passed
+]]></system-out>
+</testcase>
+<testcase classname="Transfer funds between my accounts" name="Reject a transfer without a numeric amount - #1.1" time="16.415">
+<system-out><![CDATA[
+Given I am a newly registered customer with two funded accounts.............passed
+When I transfer "" from my first account to my second account...............passed
+Then the transfer is rejected without a success confirmation................passed
+And both account balances remain unchanged..................................passed
+]]></system-out>
+</testcase>
+<testcase classname="Transfer funds between my accounts" name="Reject a transfer without a numeric amount - #1.2" time="16.26">
+<system-out><![CDATA[
+Given I am a newly registered customer with two funded accounts.............passed
+When I transfer "abc" from my first account to my second account............passed
+Then the transfer is rejected without a success confirmation................passed
+And both account balances remain unchanged..................................passed
+]]></system-out>
+</testcase>
+</testsuite>
