@@ -1,5 +1,7 @@
 package tests;
 
+import com.inflectra.spiratest.addons.junitextension.SpiraTestCase;
+import com.inflectra.spiratest.addons.junitextension.SpiraTestConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,13 @@ import java.time.Duration;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SpiraTestConfiguration(
+        url = "https://rmit.spiraservice.net",
+        login = "S4151762",
+        password = "",
+        projectId = 1151
+)
 
 public class LoginTest {
 
@@ -37,6 +46,7 @@ public class LoginTest {
 
     // LOGIN-01:
     // Verify login using a valid username and password
+    @SpiraTestCase(testCaseId = 54270)
     @Test
     public void successfulLoginWithValidCredentials() {
 
@@ -157,6 +167,7 @@ public class LoginTest {
 
     // LOGIN-02:
     // Verify login is rejected for invalid credentials
+    @SpiraTestCase(testCaseId = 54281)
     @Test
     public void loginWithInvalidCredentials() {
 
@@ -196,6 +207,7 @@ public class LoginTest {
 
     // LOGIN-03:
     // Verify validation when username and password are empty
+    @SpiraTestCase(testCaseId = 54303)
     @Test
     public void loginWithEmptyCredentials() {
 
